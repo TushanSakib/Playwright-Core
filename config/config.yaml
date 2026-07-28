@@ -1,0 +1,30 @@
+application:
+  name: OrangeHRM
+
+environment:
+  base_url: "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+
+credentials:
+  username: "Admin"
+  password: "admin123"
+
+browser:
+  browser_name: "chromium"
+  headless: false
+  slow_mo: 500
+
+timeouts:
+  page_load_timeout: 30000
+  element_timeout: 10000
+
+accessibility:
+  fail_on_critical: true
+  fail_on_serious: false
+  include_tags:
+    - wcag2a
+    - wcag2aa
+    - wcag21aa
+
+reporting:
+  screenshot_on_failure: true
+  screenshot_path: "reports/screenshots"
