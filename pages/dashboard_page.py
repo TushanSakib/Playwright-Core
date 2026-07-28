@@ -1,15 +1,26 @@
-from playwright.sync_api import expect
+from playwright.sync_api import Page, expect
+import allure
 
 
 class DashboardPage:
+    """
+    Dashboard page object.
+    Contains dashboard related actions and validations.
+    """
 
-    DASHBOARD_HEADER = "//h6[text()='Dashboard']"
+    DASHBOARD_TITLE = "h6.oxd-text--h6"
 
-    def __init__(self, page):
+    def __init__(self, page: Page):
         self.page = page
 
-    def verify_dashboard_loaded(self):
-
+    @allure.step("Verify dashboard page is loaded")
+    def verify_page_loaded(self) -> None:
         expect(
-            self.page.locator(self.DASHBOARD_HEADER)
-        ).to_be_visible()
+            self.page.locator(self.DASHBOARD_TITLE)
+        ).to_have_text("Dashboard")
+
+    @allure.step("Get dashboard page title")
+    def get_page_title(self) -> str:
+        return self.page.locator(
+            self.DASHBOARD_TITLE
+        ).text_content()
