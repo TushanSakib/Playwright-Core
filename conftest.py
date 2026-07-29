@@ -7,8 +7,13 @@ from playwright.sync_api import Browser
 from playwright.sync_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
+from pages.login_page import LoginPage
 from utilities.config_reader import ConfigReader
 
+
+BASE_URL = ("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
+USERNAME = "Admin"
+PASSWORD = "admin123"
 
 @pytest.fixture(scope="session")
 def playwright_instance():
@@ -75,3 +80,11 @@ def screenshot_on_failure(request, page):
             name="Failure Screenshot",
             attachment_type=allure.attachment_type.PNG
         )
+
+@pytest.fixture()
+def logged_in_page(page):
+    page.goto(BASE_URL)
+    login_page = LoginPage(page)
+    login_page.login(username=USERNAME,password=PASSWORD)
+    page.wait_for_url("**/dashboard/index")
+    return page
