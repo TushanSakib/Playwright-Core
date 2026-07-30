@@ -82,9 +82,8 @@ def screenshot_on_failure(request, page):
         )
 
 @pytest.fixture()
-def logged_in_page(page):
-    page.goto(BASE_URL)
-    login_page = LoginPage(page)
-    login_page.login(username=USERNAME,password=PASSWORD)
-    page.wait_for_url("**/dashboard/index")
-    return page
+def logged_in_page(browser):
+    context = browser.new_context(storage_state="storage_state.json")
+    page = context.new_page()
+    yield page
+    context.close()

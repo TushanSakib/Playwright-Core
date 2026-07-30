@@ -1,39 +1,55 @@
 from playwright.sync_api import sync_playwright
 
 
+BASE_URL = (
+    "https://opensource-demo.orangehrmlive.com/"
+    "web/index.php/auth/login"
+)
+
+USERNAME = "Admin"
+PASSWORD = "admin123"
+
+
 def create_storage_state():
 
-    with sync_playwright() as p:
+    with sync_playwright() as playwright:
 
-        browser = p.chromium.launch(headless=False)
-
-        page = browser.new_page()
-
-        page.goto(
-            "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+        browser = playwright.chromium.launch(
+            headless=False
         )
 
-        page.fill(
-            "input[name='username']",
-            "Admin"
-        )
+        context = browser.new_context()
 
-        page.fill(
-            "input[name='password']",
-            "admin123"
-        )
+        page = context.new_page()
 
-        page.click(
+        page.goto(BASE_URL)
+
+        page.locator(
+            "input[name='username']"
+        ).fill(USERNAME)
+
+        page.locator(
+            "input[name='password']"
+        ).fill(PASSWORD)
+
+        page.locator(
             "button[type='submit']"
+        ).click()
+
+        page.wait_for_url(
+            "**/dashboard/index"
         )
 
-        page.wait_for_url("**/dashboard/index")
-
-        page.context.storage_state(
+        context.storage_state(
             path="storage_state.json"
         )
 
         browser.close()
 
+        print(
+            "✅ storage_state.json created successfully"
+        )
 
-create_storage_state()
+
+if __name__ == "__main__":
+    create_storage_state()
