@@ -1,19 +1,9 @@
+import os
+
 import allure
 import pytest
-
-from playwright.sync_api import Playwright
-from playwright.sync_api import Page
-from playwright.sync_api import Browser
-from playwright.sync_api import BrowserContext
 from playwright.sync_api import sync_playwright
 
-from pages.login_page import LoginPage
-from utilities.config_reader import ConfigReader
-
-
-BASE_URL = ("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
-USERNAME = "Admin"
-PASSWORD = "admin123"
 
 @pytest.fixture(scope="session")
 def playwright_instance():
@@ -22,14 +12,10 @@ def playwright_instance():
 
 
 @pytest.fixture(scope="session")
-def browser(playwright_instance: Playwright) -> Browser:
-    browser_name = ConfigReader.get("browser", "browser_name")
-    headless = ConfigReader.get("browser", "headless")
-    slow_mo = ConfigReader.get("browser", "slow_mo")
+def browser(playwright_instance):
 
-    browser = getattr(playwright_instance, browser_name).launch(
-        headless=headless,
-        slow_mo=slow_mo
+    browser = playwright_instance.chromium.launch(
+        headless=False
     )
 
     yield browser
@@ -37,53 +23,76 @@ def browser(playwright_instance: Playwright) -> Browser:
     browser.close()
 
 
-@pytest.fixture(scope="function")
-def context(browser: Browser) -> BrowserContext:
-    context = browser.new_context()
+@pytest.fixture()
+def logged_in_page(browser):
 
-    yield context
+    context = browser.new_context(
+        storage_state="storage_state.json"
+    )
 
-    context.close()
-
-
-@pytest.fixture(scope="function")
-def page(context: BrowserContext) -> Page:
     page = context.new_page()
 
-    page.set_default_timeout(
-        ConfigReader.get("timeouts", "element_timeout")
+    page.goto(
+        "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
     )
 
     yield page
 
-    page.close()
-
+    context.close()
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item):
+def pytest_runtest_makereport(item,call):
     outcome = yield
     report = outcome.get_result()
 
-    setattr(item, "rep_" + report.when, report)
+    setattr(item, f"rep_{report.when}",report)
 
 
 @pytest.fixture(autouse=True)
-def screenshot_on_failure(request, page):
+def capture_screenshot(request, page):
     yield
 
-    if request.node.rep_call.failed:
+    screenshots_dir = "reports/screenshots"
+    os.makedirs(screenshots_dir, exist_ok=True)
 
-        screenshot = page.screenshot(full_page=True)
+    test_name = request.node.name
 
-        allure.attach(
-            screenshot,
-            name="Failure Screenshot",
+    if request.node.rep_call.passed:
+
+        screenshot_path = (
+            f"{screenshots_dir}/{test_name}_PASS.png"
+        )
+
+        page.screenshot(
+            path=screenshot_path,
+            full_page=True,
+            timeout=30000
+        )
+
+        allure.attach.file(
+            screenshot_path,
+            name=f"{test_name} - PASS",
             attachment_type=allure.attachment_type.PNG
         )
 
-@pytest.fixture()
-def logged_in_page(browser):
-    context = browser.new_context(storage_state="storage_state.json")
-    page = context.new_page()
-    yield page
-    context.close()
+    elif request.node.rep_call.failed:
+
+        screenshot_path = (
+            f"{screenshots_dir}/{test_name}_FAIL.png"
+        )
+
+        page.screenshot(
+            path=screenshot_path,
+            full_page=True,
+            timeout=30000
+        )
+
+        allure.attach.file(
+            screenshot_path,
+            name=f"{test_name} - FAIL",
+            attachment_type=allure.attachment_type.PNG
+        )
+
+
+
+

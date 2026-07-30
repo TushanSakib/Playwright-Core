@@ -1,27 +1,23 @@
-import allure
-
-from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
+from utilities.accessibility_scanner import AccessibilityScanner
 
 
-@allure.feature("Accessibility Scan")
-def test_dashboard_accessibility(page):
+def test_dashboard_accessibility(
+        logged_in_page
+):
 
-    page.goto(
-        "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+    dashboard = DashboardPage(
+        logged_in_page
     )
 
-    login = LoginPage(page)
-
-    login.login(
-        "Admin",
-        "admin123"
+    logged_in_page.goto(
+        "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
     )
 
-    page.wait_for_timeout(5000)
+    dashboard.verify_page_loaded()
 
-    dashboard = DashboardPage(page)
+    scanner = AccessibilityScanner(
+        logged_in_page
+    )
 
-    dashboard.verify_dashboard_loaded()
-
-    print("Dashboard loaded successfully")
+    scanner.scan()
