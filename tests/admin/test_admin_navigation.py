@@ -1,15 +1,14 @@
+import allure
+
+from pages.admin_page import AdminPage
 from pages.components.side_menu_component import (
     SideMenuComponent
 )
 
 
-def test_open_admin_module(
-        logged_in_page
-):
-
-    logged_in_page.goto(
-        "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
-    )
+@allure.feature("Admin")
+@allure.story("Navigation")
+def test_open_admin_page(logged_in_page):
 
     menu = SideMenuComponent(
         logged_in_page
@@ -17,7 +16,8 @@ def test_open_admin_module(
 
     menu.open_admin()
 
-    assert (
-        "admin"
-        in logged_in_page.url.lower()
+    admin_page = AdminPage(
+        logged_in_page
     )
+
+    admin_page.verify_page_loaded()
