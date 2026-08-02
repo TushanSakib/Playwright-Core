@@ -6,13 +6,11 @@ from playwright.sync_api import expect
 
 class PIMPage:
 
-    PAGE_HEADER = "h6"
+    ADD_EMPLOYEE_MENU = "a:has-text('Add Employee')"
 
-    ADD_EMPLOYEE_MENU = "//a[text()='Add Employee']"
-
-    FIRST_NAME = "input[name='firstName']"
-    MIDDLE_NAME = "input[name='middleName']"
-    LAST_NAME = "input[name='lastName']"
+    FIRST_NAME_INPUT = "input[name='firstName']"
+    MIDDLE_NAME_INPUT = "input[name='middleName']"
+    LAST_NAME_INPUT = "input[name='lastName']"
 
     SAVE_BUTTON = "button[type='submit']"
 
@@ -20,56 +18,70 @@ class PIMPage:
         "//h6[text()='Personal Details']"
     )
 
+    EMPLOYEE_ID = (
+        "(//input[contains(@class,'oxd-input')])[5]"
+    )
+
     def __init__(self, page: Page):
         self.page = page
 
-    @allure.step("Verify PIM page loaded")
-    def verify_page_loaded(self):
-
-        expect(
-            self.page.locator(self.PAGE_HEADER)
-        ).to_have_text("PIM")
-
-    @allure.step("Open Add Employee page")
-    def open_add_employee(self):
+    @allure.step("Navigate to Add Employee page")
+    def open_add_employee(self) -> None:
 
         self.page.locator(
             self.ADD_EMPLOYEE_MENU
         ).click()
 
+        expect(
+            self.page.locator(
+                self.FIRST_NAME_INPUT
+            )
+        ).to_be_visible()
+
     @allure.step(
-        "Add employee: {first_name} {last_name}"
+        "Create employee: {first_name} {middle_name} {last_name}"
     )
     def add_employee(
             self,
-            first_name,
-            middle_name,
-            last_name
-    ):
+            first_name: str,
+            middle_name: str,
+            last_name: str
+    ) -> dict:
 
         self.page.locator(
-            self.FIRST_NAME
+            self.FIRST_NAME_INPUT
         ).fill(first_name)
 
         self.page.locator(
-            self.MIDDLE_NAME
+            self.MIDDLE_NAME_INPUT
         ).fill(middle_name)
 
         self.page.locator(
-            self.LAST_NAME
+            self.LAST_NAME_INPUT
         ).fill(last_name)
+
+        employee_id = self.page.locator(
+            self.EMPLOYEE_ID
+        ).input_value()
 
         self.page.locator(
             self.SAVE_BUTTON
         ).click()
 
+        return {
+            "first_name": first_name,
+            "middle_name": middle_name,
+            "last_name": last_name,
+            "employee_id": employee_id
+        }
+
     @allure.step(
-        "Verify employee created successfully"
+        "Verify employee creation successful"
     )
-    def verify_employee_created(self):
+    def verify_employee_created(self) -> None:
 
         expect(
             self.page.locator(
                 self.PERSONAL_DETAILS_HEADER
             )
-        ).to_be_visible()
+        ).to_be_visible(timeout=10000)

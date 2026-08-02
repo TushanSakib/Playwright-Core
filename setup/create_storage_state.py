@@ -37,8 +37,12 @@ def create_storage_state():
         ).click()
 
         page.wait_for_url(
-            "**/dashboard/index"
+            "**/dashboard/index",
+            timeout=30000
         )
+
+        print("Logged in successfully")
+        print(page.url)
 
         context.storage_state(
             path="storage_state.json"

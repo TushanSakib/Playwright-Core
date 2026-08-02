@@ -4,6 +4,15 @@ import allure
 import pytest
 from playwright.sync_api import sync_playwright
 
+from pages.login_page import LoginPage
+from utilities.credential_manage import CredentialManager
+
+
+BASE_URL = (
+    "https://opensource-demo.orangehrmlive.com/"
+    "web/index.php/auth/login"
+)
+
 
 @pytest.fixture(scope="session")
 def playwright_instance():
@@ -15,7 +24,8 @@ def playwright_instance():
 def browser(playwright_instance):
 
     browser = playwright_instance.chromium.launch(
-        headless=False
+        headless=False,
+        slow_mo=500
     )
 
     yield browser
@@ -24,75 +34,126 @@ def browser(playwright_instance):
 
 
 @pytest.fixture()
-def logged_in_page(browser):
+def login_as(browser):
+    """
+    Role based login fixture
+    Example:
+        page = login_as("admin")
+    """
 
-    context = browser.new_context(
-        storage_state="storage_state.json"
-    )
+    def _login(role: str):
 
-    page = context.new_page()
+        credentials = (
+            CredentialManager.get_credentials(role)
+        )
 
-    page.goto(
-        "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
-    )
+        context = browser.new_context()
 
-    yield page
+        page = context.new_page()
 
-    context.close()
+        page.goto(BASE_URL)
+
+        login_page = LoginPage(page)
+
+        login_page.login(
+            credentials["username"],
+            credentials["password"]
+        )
+
+        page.wait_for_url(
+            "**/dashboard/index"
+        )
+
+        return page
+
+    return _login
+
+
+@pytest.fixture()
+def logged_in_page(login_as):
+    """
+    Default login as Admin.
+    """
+
+    return login_as("admin")
+
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item,call):
+def pytest_runtest_makereport(item, call):
+
     outcome = yield
     report = outcome.get_result()
 
-    setattr(item, f"rep_{report.when}",report)
+    setattr(
+        item,
+        f"rep_{report.when}",
+        report
+    )
 
 
 @pytest.fixture(autouse=True)
-def capture_screenshot(request, page):
+def capture_screenshot(request):
+
     yield
 
-    screenshots_dir = "reports/screenshots"
-    os.makedirs(screenshots_dir, exist_ok=True)
+    page = request.node.funcargs.get(
+        "logged_in_page"
+    )
+
+    if not page:
+        return
+
+    screenshots_dir = (
+        "reports/screenshots"
+    )
+
+    os.makedirs(
+        screenshots_dir,
+        exist_ok=True
+    )
 
     test_name = request.node.name
 
-    if request.node.rep_call.passed:
+    try:
 
-        screenshot_path = (
-            f"{screenshots_dir}/{test_name}_PASS.png"
+        if request.node.rep_call.passed:
+
+            screenshot_path = (
+                f"{screenshots_dir}/"
+                f"{test_name}_PASS.png"
+            )
+
+            page.screenshot(
+                path=screenshot_path,
+                full_page=True
+            )
+
+            allure.attach.file(
+                screenshot_path,
+                name=f"{test_name} - PASS",
+                attachment_type=allure.attachment_type.PNG
+            )
+
+        elif request.node.rep_call.failed:
+
+            screenshot_path = (
+                f"{screenshots_dir}/"
+                f"{test_name}_FAIL.png"
+            )
+
+            page.screenshot(
+                path=screenshot_path,
+                full_page=True
+            )
+
+            allure.attach.file(
+                screenshot_path,
+                name=f"{test_name} - FAIL",
+                attachment_type=allure.attachment_type.PNG
+            )
+
+    except Exception as e:
+
+        print(
+            f"Screenshot capture failed: {e}"
         )
-
-        page.screenshot(
-            path=screenshot_path,
-            full_page=True,
-            timeout=30000
-        )
-
-        allure.attach.file(
-            screenshot_path,
-            name=f"{test_name} - PASS",
-            attachment_type=allure.attachment_type.PNG
-        )
-
-    elif request.node.rep_call.failed:
-
-        screenshot_path = (
-            f"{screenshots_dir}/{test_name}_FAIL.png"
-        )
-
-        page.screenshot(
-            path=screenshot_path,
-            full_page=True,
-            timeout=30000
-        )
-
-        allure.attach.file(
-            screenshot_path,
-            name=f"{test_name} - FAIL",
-            attachment_type=allure.attachment_type.PNG
-        )
-
-
-
-
