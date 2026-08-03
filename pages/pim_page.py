@@ -21,6 +21,15 @@ class PIMPage:
     EMPLOYEE_ID = (
         "(//input[contains(@class,'oxd-input')])[5]"
     )
+    EMPLOYEE_LIST_MENU = "a:has-text('Employee List')"
+    EMPLOYEE_NAME_SEARCH = (
+        "(//input[@placeholder='Type for hints...'])[1]"
+    )
+    SEARCH_BUTTON = (
+        "//button[@type='submit']"
+    )
+    RESULT_TABLE = ".oxd-table-body"
+    NO_RECORDS_FOUND = "text=No Records Found"
 
     def __init__(self, page: Page):
         self.page = page
@@ -85,3 +94,10 @@ class PIMPage:
                 self.PERSONAL_DETAILS_HEADER
             )
         ).to_be_visible(timeout=10000)
+
+
+    @allure.step("Navigate to Employee List")
+    def open_employee_list(self):
+        self.page.locator(
+            self.EMPLOYEE_LIST_MENU
+        ).click()
