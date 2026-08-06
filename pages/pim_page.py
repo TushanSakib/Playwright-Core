@@ -101,3 +101,22 @@ class PIMPage:
         self.page.locator(
             self.EMPLOYEE_LIST_MENU
         ).click()
+
+
+    @allure.step("Search employee: {employee}")
+    def search_employee(self,employee_name):
+        self.page.locator(
+            self.EMPLOYEE_NAME_SEARCH
+        ).fill(employee_name)
+
+        self.page.locator(
+            self.SEARCH_BUTTON
+        ).click()
+
+    @allure.step("Verify employee exists in search result")
+    def verify_employee_exists(self,employee_name:str):
+        expect(
+            self.page.locator(
+                self.RESULT_TABLE
+            )
+        ).to_contain_text(employee_name)
