@@ -17,3 +17,7 @@ class DataGenerator:
     def last_name():
 
         return f"User{uuid.uuid4().hex[:6]}"
+
+    @staticmethod
+    def nickname():
+        return f"Nick{uuid.uuid4().hex[:4]}"

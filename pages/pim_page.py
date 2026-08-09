@@ -143,7 +143,7 @@ class PIMPage:
 
 
     @allure.step("Open employee for editing")
-    def open_employee_for_editing(self):
+    def open_employee_for_edit(self):
         self.page.locator(
             self.EDIT_BUTTON
         ).click()
