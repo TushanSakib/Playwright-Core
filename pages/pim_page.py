@@ -31,6 +31,26 @@ class PIMPage:
     RESULT_TABLE = ".oxd-table-body"
     NO_RECORDS_FOUND = "text=No Records Found"
 
+    EDIT_BUTTON = (
+        "(//i[contains(@class,'bi-pencil-fill')])[1]"
+    )
+
+    NICKNAME_INPUT = (
+        "(//input[contains(@class,'oxd-input')])[6]"
+    )
+
+    SAVE_PERSONAL_DETAILS_BUTTON = (
+        "(//button[@type='submit'])[1]"
+    )
+
+    SUCCESS_TOAST = (
+        "//p[text()='Successfully Updated']"
+    )
+
+
+
+
+
     def __init__(self, page: Page):
         self.page = page
 
@@ -120,3 +140,29 @@ class PIMPage:
                 self.RESULT_TABLE
             )
         ).to_contain_text(employee_name)
+
+
+    @allure.step("Open employee for editing")
+    def open_employee_for_editing(self):
+        self.page.locator(
+            self.EDIT_BUTTON
+        ).click()
+
+
+    @allure.step("Update employee nickname: {nickname}")
+    def update_nickname(self,nickname:str):
+        self.page.locator(
+            self.NICKNAME_INPUT
+        ).fill(nickname)
+
+        self.page.locator(
+            self.SAVE_PERSONAL_DETAILS_BUTTON
+        ).click()
+
+    @allure.step("Verify employee nickname updated successfully")
+    def verify_employee_update(self):
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible()
