@@ -47,6 +47,15 @@ class PIMPage:
         "//p[text()='Successfully Updated']"
     )
 
+    DELETE_BUTTON = (
+        "(//i[contains(@class,'bi-trash')])[1]"
+    )
+
+    CONFIRM_DELETE_BUTTON = (
+        "//button[normalize-space()='Yes, Delete']"
+    )
+
+
 
 
 
@@ -161,6 +170,26 @@ class PIMPage:
 
     @allure.step("Verify employee nickname updated successfully")
     def verify_employee_update(self):
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible()
+
+
+    @allure.step("Delete Employee")
+    def delete_employee(self):
+        self.page.locator(
+            self.DELETE_BUTTON
+        ).click()
+
+        self.page.locator(
+            self.CONFIRM_DELETE_BUTTON
+        ).click()
+
+
+    @allure.step("Verify Employee Deleted Successfully")
+    def verify_employee_deleted(self):
         expect(
             self.page.locator(
                 self.SUCCESS_TOAST
