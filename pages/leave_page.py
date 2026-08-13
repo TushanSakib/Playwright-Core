@@ -1,4 +1,5 @@
-from playwright.sync_api import Page
+import allure
+from playwright.sync_api import Page, expect
 
 
 class LeavePage:
@@ -37,3 +38,10 @@ class LeavePage:
 
     def __init__(self,page:Page):
         self.page  =page
+
+
+    @allure.step("Verify Leave Page Loaded")
+    def verify_page_loaded(self):
+        expect(
+            self.page.locator(self.PAGE_HEADER)
+        ).to_have_text("Leave")
