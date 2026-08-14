@@ -45,3 +45,60 @@ class LeavePage:
         expect(
             self.page.locator(self.PAGE_HEADER)
         ).to_have_text("Leave")
+
+    @allure.step("Open assign Leave")
+    def open_assign_leave(self):
+        self.page.locator(
+            self.ASSIGN_LEAVE_MENU
+        ).click()
+
+    @allure.step("Assign Leave")
+    def assign_leave(self,
+                     employee_name,
+                     from_date,
+                     to_date,
+                     comment):
+        self.page.locator(
+            self.EMPLOYEE_NAME
+        ).fill(employee_name)
+        self.page.wait_for_timeout(2000)
+
+        self.page.keyboard.press("ArrowDown")
+
+        self.page.keyboard.press("Enter")
+
+        self.page.locator(
+            self.LEAVE_TYPE_DROPDOWN
+        ).click()
+
+        self.page.keyboard.press(
+            "ArrowDown"
+        )
+
+        self.page.keyboard.press(
+            "Enter"
+        )
+
+        self.page.locator(
+            self.FROM_DATE
+        ).fill(from_date)
+
+        self.page.locator(
+            self.TO_DATE
+        ).fill(to_date)
+
+        self.page.locator(
+            self.COMMENT
+        ).fill(comment)
+
+        self.page.locator(
+            self.ASSIGN_BUTTON
+        ).click()
+
+    @allure.step("Verify leave assigned successfully")
+    def verify_leave_assigned(self):
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible()
