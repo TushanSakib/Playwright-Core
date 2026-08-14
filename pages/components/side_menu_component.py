@@ -6,6 +6,7 @@ class SideMenuComponent:
     ADMIN_MENU = "//span[text()='Admin']"
     PIM_MENU = "//span[text()='PIM']"
     LEAVE_MENU = "//span[text()='Leave']"
+    LEAVE = "a[href*='leave']"
 
     def __init__(self, page):
 
