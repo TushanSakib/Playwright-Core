@@ -96,5 +96,3 @@ class AdminPage:
         self.page.locator(
             self.PASSWORD
         ).fill(password)
-
-        self.page.locator(
