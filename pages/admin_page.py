@@ -1,10 +1,9 @@
 import allure
-
-from playwright.sync_api import Page
-from playwright.sync_api import expect
+from playwright.sync_api import Page, expect
 
 
 class AdminPage:
+
     PAGE_HEADER = "h6"
 
     ADD_BUTTON = "//button[normalize-space()='Add']"
@@ -46,23 +45,26 @@ class AdminPage:
 
     @allure.step("Verify Admin Page Loaded")
     def verify_page_loaded(self):
+
         expect(
             self.page.locator(self.PAGE_HEADER)
         ).to_have_text("Admin")
 
     @allure.step("Open Add User Form")
     def open_add_user(self):
+
         self.page.locator(
             self.ADD_BUTTON
         ).click()
 
     @allure.step("Create New User")
     def create_user(
-            self,
-            employee_name,
-            username,
-            password
+        self,
+        employee_name: str,
+        username: str,
+        password: str
     ):
+
         # User Role
         self.page.locator(
             self.USER_ROLE_DROPDOWN
@@ -71,7 +73,7 @@ class AdminPage:
         self.page.keyboard.press("ArrowDown")
         self.page.keyboard.press("Enter")
 
-        # Employee
+        # Employee Name
         self.page.locator(
             self.EMPLOYEE_NAME
         ).fill(employee_name)
@@ -89,10 +91,31 @@ class AdminPage:
         self.page.keyboard.press("ArrowDown")
         self.page.keyboard.press("Enter")
 
+        # Username
         self.page.locator(
             self.USERNAME
         ).fill(username)
 
+        # Password
         self.page.locator(
             self.PASSWORD
         ).fill(password)
+
+        # Confirm Password
+        self.page.locator(
+            self.CONFIRM_PASSWORD
+        ).fill(password)
+
+        # Save
+        self.page.locator(
+            self.SAVE_BUTTON
+        ).click()
+
+    @allure.step("Verify User Created Successfully")
+    def verify_user_created(self):
+
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible(timeout=10000)
