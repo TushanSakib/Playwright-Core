@@ -21,3 +21,10 @@ class DataGenerator:
     @staticmethod
     def nickname():
         return f"Nick{uuid.uuid4().hex[:4]}"
+
+    @staticmethod
+    def username():
+        return (
+            "user_"+
+            uuid.uuid4().hex[:5]
+        )
