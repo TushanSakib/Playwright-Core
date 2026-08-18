@@ -39,6 +39,21 @@ class AdminPage:
     SUCCESS_TOAST = (
         "//p[contains(@class,'oxd-text--toast-message')]"
     )
+    SEARCH_USERNAME = (
+        "(//input[contains(@class,'oxd-input')])[2]"
+    )
+
+    SEARCH_BUTTON = (
+        "//button[@type='submit']"
+    )
+
+    RESET_BUTTON = (
+        "//button[normalize-space()='Reset']"
+    )
+
+    RESULT_TABLE = (
+        ".oxd-table-body"
+    )
 
     def __init__(self, page: Page):
         self.page = page
@@ -119,3 +134,15 @@ class AdminPage:
                 self.SUCCESS_TOAST
             )
         ).to_be_visible(timeout=10000)
+
+
+    @allure.step("Search user: {username}")
+    def search_user(self,username:str):
+        self.page.locator(
+            self.SEARCH_USERNAME
+        ).fill(username)
+
+        self.page.locator(
+            self.SEARCH_BUTTON
+        ).click()
+
