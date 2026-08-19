@@ -146,3 +146,10 @@ class AdminPage:
             self.SEARCH_BUTTON
         ).click()
 
+    @allure.step("Verify user found is search")
+    def verify_user_found(self,username:str):
+
+        expect(
+            self.page.locator(self.RESULT_TABLE)
+        ).to_contain_text(username)
+
