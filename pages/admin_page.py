@@ -54,6 +54,10 @@ class AdminPage:
     RESULT_TABLE = (
         ".oxd-table-body"
     )
+    EDIT_BUTTON = (
+        "(//i[contains(@class,'bi-pencil-fill')])[1]"
+    )
+
 
     def __init__(self, page: Page):
         self.page = page
@@ -153,3 +157,25 @@ class AdminPage:
             self.page.locator(self.RESULT_TABLE)
         ).to_contain_text(username)
 
+    @allure.step("Open user for editing")
+    def open_user_for_edit(self):
+        self.page.locator(
+            self.EDIT_BUTTON
+        ).click()
+
+    @allure.step("Update user status")
+    def update_user_status(self):
+        self.page.locator(
+            self.STATUS_DROPDOWN
+        ).click()
+
+        self.page.keyboard.press(
+            "ArrowDown"
+        )
+        self.page.keyboard.press(
+            "Enter"
+        )
+
+        self.page.locator(
+            self.SAVE_BUTTON
+        ).click()
