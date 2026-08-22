@@ -179,3 +179,12 @@ class AdminPage:
         self.page.locator(
             self.SAVE_BUTTON
         ).click()
+
+    @allure.step("Verify user updated successfully")
+    def verify_user_updated(self):
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible()
+
