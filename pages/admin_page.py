@@ -57,6 +57,15 @@ class AdminPage:
     EDIT_BUTTON = (
         "(//i[contains(@class,'bi-pencil-fill')])[1]"
     )
+    DELETE_BUTTON = (
+        "(//i[contains(@class,'bi-trash')])[1]"
+    )
+    CONFIRM_DELETE_BUTTON = (
+        "//button[normalize-space()='Yes, Delete']"
+    )
+    NO_RECORD_FOUND = (
+        "//span[text()='No Records Found']"
+    )
 
 
     def __init__(self, page: Page):
@@ -182,6 +191,25 @@ class AdminPage:
 
     @allure.step("Verify user updated successfully")
     def verify_user_updated(self):
+        expect(
+            self.page.locator(
+                self.SUCCESS_TOAST
+            )
+        ).to_be_visible()
+
+    @allure.step("Delete User")
+    def delete_user(self):
+        self.page.locator(
+            self.DELETE_BUTTON
+        ).click()
+
+        self.page.locator(
+            self.CONFIRM_DELETE_BUTTON
+        ).click()
+
+
+    @allure.step("Verify user deleted successfully")
+    def verify_user_deleted(self):
         expect(
             self.page.locator(
                 self.SUCCESS_TOAST
