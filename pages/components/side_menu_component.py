@@ -7,6 +7,9 @@ class SideMenuComponent:
     PIM_MENU = "//span[text()='PIM']"
     LEAVE_MENU = "//span[text()='Leave']"
     LEAVE = "a[href*='leave']"
+    RECRUITMENT = (
+        "a[href*='recruitment']"
+    )
 
     def __init__(self, page):
 
@@ -37,4 +40,10 @@ class SideMenuComponent:
 
         self.page.locator(
             self.LEAVE_MENU
+        ).click()
+
+    @allure.step("Open Recruitment Module")
+    def open_recruitment(self):
+        self.page.locator(
+            self.RECRUITMENT
         ).click()

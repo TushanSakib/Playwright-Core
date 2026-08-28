@@ -28,3 +28,11 @@ class DataGenerator:
             "user_"+
             uuid.uuid4().hex[:5]
         )
+
+    @staticmethod
+    def email():
+        return(
+            f"automation_ "
+            f"{uuid.uuid4().hex[:5]}"
+            f"@mail.com"
+        )
