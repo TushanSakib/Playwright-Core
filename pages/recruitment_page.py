@@ -25,6 +25,17 @@ class RecruitmentPage:
     SAVE_BUTTON = (
         "//button[@type='submit']"
     )
+    CANDIDATE_NAME_SEARCH = (
+        "(//input[@placeholder='Type for hints...'])[1]"
+    )
+
+    SEARCH_BUTTON = (
+        "//button[@type='submit']"
+    )
+
+    RESULT_TABLE = (
+        ".oxd-table-body"
+    )
     SUCCESS_TOAST = (
         "//p[contains(@class,'oxd-text--toast-message')]"
     )
@@ -79,3 +90,22 @@ class RecruitmentPage:
             )
         ).to_be_visible()
 
+    @allure.step("Search Candidate: {candidate_name}")
+    def search_candidate(self,candidate_name):
+        self.page.locator(
+            self.CANDIDATE_NAME_SEARCH
+        ).fill(candidate_name)
+        self.page.wait_for_timeout(2000)
+
+        self.page.keyboard.press("ArrowDown")
+
+        self.page.keyboard.press("Enter")
+        self.page.locator(
+            self.SEARCH_BUTTON
+        ).click()
+
+    @allure.step("Verify candidate found")
+    def verify_candidate_found(self,candidate_name:str):
+        expect(
+            self.page.locator(self.RESULT_TABLE)
+        ).to_contain_text(candidate_name)
