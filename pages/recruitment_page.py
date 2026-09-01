@@ -36,9 +36,18 @@ class RecruitmentPage:
     RESULT_TABLE = (
         ".oxd-table-body"
     )
+    EDIT_CANDIDATE_BUTTON = (
+        "(//i[contains(@class,'bi-pencil-fill')])[1]"
+    )
+
+    VACANCY_DROPDOWN = (
+        "(//div[contains(@class,'oxd-select-text')])[1]"
+    )
+
     SUCCESS_TOAST = (
         "//p[contains(@class,'oxd-text--toast-message')]"
     )
+
 
     def __init__(self,page:Page):
         self.page = page
@@ -109,3 +118,19 @@ class RecruitmentPage:
         expect(
             self.page.locator(self.RESULT_TABLE)
         ).to_contain_text(candidate_name)
+
+    @allure.step("Open candidate for editing")
+    def open_candidate_for_editing(self):
+        self.page.locator(
+            self.EDIT_CANDIDATE_BUTTON
+        ).click()
+
+    @allure.step("Update candidate vacancy")
+    def update_candidate_vacancy(self):
+        self.page.locator(
+            self.VACANCY_DROPDOWN
+        ).click()
+
+        self.page.keyboard.press("ArrowDown")
+        self.page.keyboard.press("Enter")
+        self.page.locator(self.SAVE_BUTTON).click()
