@@ -136,7 +136,7 @@ class RecruitmentPage:
         self.page.locator(self.SAVE_BUTTON).click()
 
     @allure.step("Verify candidate updated")
-    def varify_candidate_updated(self):
+    def verify_candidate_updated(self):
         expect(
             self.page.locator(
                 self.SUCCESS_TOAST
