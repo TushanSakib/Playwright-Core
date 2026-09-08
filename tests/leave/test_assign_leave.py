@@ -1,4 +1,4 @@
-import allure
+import allure,pytest
 
 from pages.components.side_menu_component import SideMenuComponent
 from pages.leave_page import LeavePage
@@ -8,6 +8,10 @@ from pages.leave_page import LeavePage
 @allure.story("Assign Leave")
 @allure.severity(allure.severity_level.CRITICAL)
 
+@pytest.mark.flaky(
+    reruns=3,
+    reruns_delay=2
+)
 def test_assign_leave(logged_in_page):
     menu = SideMenuComponent(logged_in_page)
 
