@@ -67,7 +67,7 @@ class BasePage:
         expect(self.page.locator(locator)).to_be_visible()
 
     def wait_for_hidden(self,locator:str):
-        expect(self.page.locator(locator)).to_be_visible()
+        expect(self.page.locator(locator)).to_be_hidden()
 
     def select_dropdown_option(self,
                                dropdown_locator:str,
