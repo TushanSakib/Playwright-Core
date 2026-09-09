@@ -2,6 +2,7 @@ import time
 
 import allure
 from playwright.sync_api import Page, expect
+import pytest_check as check
 
 
 class BasePage:
@@ -78,6 +79,16 @@ class BasePage:
             option_text,
             exact=True
         ).click()
+
+    def soft_verify_visible(self,locator:str,message=""):
+        check.is_true(
+            self.page.locator(locator).is_visible(),message
+        )
+    def soft_verify_text(self,locator:str,expected_text:str):
+        actual_text = self.page.locator(
+            locator
+        ).text_content()
+        check.equal(actual_text,expected_text)
 
     def navigate(self, url: str):
 
