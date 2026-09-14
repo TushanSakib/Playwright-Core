@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 
 from pages.login_page import LoginPage
 from utilities.credential_manage import CredentialManager
-
+from utilities.network_monitor import NetworkMonitor
 
 BASE_URL = (
     "https://opensource-demo.orangehrmlive.com/"
@@ -325,3 +325,9 @@ def pytest_runtest_call(item):
                 delattr(item, attr)
 
     # if loop exits normally, let pytest handle final failure
+
+    @pytest.fixture
+    def network_monitor(logged_in_page):
+        monitor = NetworkMonitor(logged_in_page)
+        monitor.start_monitoring()
+        return monitor
