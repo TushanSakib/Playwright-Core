@@ -50,3 +50,29 @@ class NetworkMonitor:
             f"Failed Requests found: "
             f"{len(self.failed_requests)}"
         )
+    def get_server_errors(self):
+        server_errors = []
+        for response in self.responses:
+            if response["status"] >= 500:
+                server_errors.append(response)
+        return server_errors
+
+    def verify_no_server_errors(self):
+        errors = self.get_server_errors()
+        assert len(errors) == 0,(
+            f"Server Errors found: "
+            f"{len(errors)}"
+        )
+
+    def verify_response_time(self,max_time=3):
+        slow_apis = []
+
+        for response in self.responses:
+            duration = response.get("duration")
+            if(duration and duration > max_time):
+                slow_apis.append(response)
+
+        assert len(slow_apis) ==0,(
+            f"Slow APIs found: "
+            f"{len(slow_apis)}"
+        )

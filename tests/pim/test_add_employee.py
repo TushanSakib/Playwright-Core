@@ -12,13 +12,15 @@ from utilities.data_generator import (
 @allure.feature("PIM")
 @allure.story("Add Employee")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_add_employee(logged_in_page):
+def test_add_employee(logged_in_page,network_monitor):
 
     menu = SideMenuComponent(
         logged_in_page
     )
 
     menu.open_pim()
+
+    network_monitor.verify_no_failed_requests()
 
     pim_page = PIMPage(
         logged_in_page
