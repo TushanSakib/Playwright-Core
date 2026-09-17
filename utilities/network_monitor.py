@@ -1,4 +1,5 @@
 import allure
+import time
 from allure_pytest.utils import ALLURE_LINK_MARK
 
 
@@ -8,8 +9,12 @@ class NetworkMonitor:
 
         self.failed_requests = []
         self.responses = []
-
+        self.request_timings = {}
     def start_monitoring(self):
+        self.page.on(
+            "request",
+            self._request_started
+        )
         self.page.on(
             "requestFailed",
             self._capture_failed_request
@@ -18,16 +23,40 @@ class NetworkMonitor:
             "response",
             self._capture_response
         )
+
+    def _request_started(self,request):
+        self.request_timings[
+            request.url
+        ] = time.time()
     def _capture_failed_request(self,request):
         self.failed_requests.append({
             "url":request.url,
             "method":request.method
         })
 
-    def _capture_response(self,response):
+    def _capture_response(
+            self,
+            response
+    ):
+
+        start_time = (
+            self.request_timings.get(
+                response.url
+            )
+        )
+
+        duration = None
+
+        if start_time:
+            duration = (
+                    time.time() -
+                    start_time
+            )
+
         self.responses.append({
-            "url":response.url,
-            "status":response.status
+            "url": response.url,
+            "status": response.status,
+            "duration": duration
         })
 
     def attach_results(self):
