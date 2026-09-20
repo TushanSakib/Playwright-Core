@@ -1,6 +1,8 @@
 import json
 import allure
 
+from utilities.accessibility_history import AccessibilityHistory
+
 
 class AccessibilityScanner:
 
@@ -14,7 +16,7 @@ class AccessibilityScanner:
             path="axe/axe.min.js"
         )
 
-    def scan(self):
+    def scan(self,page_name):
 
         self.inject_axe()
 
@@ -23,6 +25,10 @@ class AccessibilityScanner:
                 return await axe.run();
             }
         """)
+        AccessibilityHistory.save_results(
+            page_name,
+            results
+        )
 
         allure.attach(
             json.dumps(results, indent=4),
