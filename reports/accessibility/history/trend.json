@@ -1,0 +1,10 @@
+[
+  {
+    "date": "2026-09-17",
+    "page": "Dashboard",
+    "critical": 5,
+    "serious": 12,
+    "moderate": 20,
+    "minor": 9
+  }
+]
